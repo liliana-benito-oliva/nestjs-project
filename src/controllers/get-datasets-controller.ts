@@ -1,11 +1,11 @@
 import { Controller, Get, Query } from "@nestjs/common";
+import { GetDatasetsRequest } from "../schemas/requests/get-datasets-request";
 import {
   buildErrorResponseFromServiceError,
   simpleApiLogger,
 } from "../common";
 import { validateDatasetQueryParams } from "../common/validation";
 import {
-  GetDatasetsRequest,
   GetDatasetsResponse,
   isServiceError,
   responseCodes,

@@ -1,0 +1,16 @@
+import { ApiProperty } from "@nestjs/swagger";
+import { IsOptional } from "class-validator";
+
+export class GetProfilesFilters {
+  @ApiProperty({ required: false, example: "Antonio", type: String })
+  @IsOptional()
+  name: string;
+
+  @ApiProperty({ required: false, example: "Partido Popular", type: String })
+  @IsOptional()
+  party: string;
+
+  @ApiProperty({ required: false, enum: ["Hombre", "Mujer"], type: String })
+  @IsOptional()
+  gender: string;
+}

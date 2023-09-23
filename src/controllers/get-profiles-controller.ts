@@ -6,7 +6,7 @@ import {
   responseCodes,
   ResponseGeneric,
 } from "../schemas";
-import { GetProfilesService } from "src/services/get-profiles";
+import { GetProfilesService } from "../services/get-profiles";
 
 @Controller('politicians')
 export class GetProfilesController {

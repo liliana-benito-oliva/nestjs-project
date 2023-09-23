@@ -7,7 +7,12 @@ const serviceErrorSchema = Z.object({
 
 export type ServiceError = Z.Infer<typeof serviceErrorSchema>;
 
-//TODO
 export const isServiceError = (
   evaluated: ServiceError | any
 ): evaluated is ServiceError => !!(evaluated as ServiceError).cause;
+
+const esErrorSchema = Z.object({
+  method: Z.string(),
+}).and(serviceErrorSchema);
+
+export type ESError = Z.Infer<typeof esErrorSchema>;

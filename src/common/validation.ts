@@ -1,4 +1,4 @@
-import { GetDatasetsRequest } from "src/schemas"
+import { GetDatasetsRequest } from "../schemas/requests/get-datasets-request"
 
 
 export const validateDatasetQueryParams = (params: GetDatasetsRequest): boolean => {
