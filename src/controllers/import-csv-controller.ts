@@ -17,7 +17,7 @@ import {
 } from "../schemas";
 import { ImportCsvService } from "../services";
 
-@Controller()
+@Controller('files')
 export class ImportCsvController {
   constructor(private readonly appService: ImportCsvService) {}
   loggerContext: string = "import-csv-controller";

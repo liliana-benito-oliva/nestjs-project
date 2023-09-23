@@ -13,13 +13,13 @@ import {
 } from "../schemas";
 import { GetDatasetsService } from "../services";
 
-@Controller()
+@Controller('data-operations')
 export class GetDatasetsController {
   loggerContext: string = "get-datasets-controller";
   methodDictionary = {
     "get-average": this.appService.getAverage,
     "get-median": this.appService.getMedianSalary,
-    "get-top-salaires": this.appService.getTopNSalaries,
+    "get-top-salaries": this.appService.getTopNSalaries,
   };
   constructor(private readonly appService: GetDatasetsService) {}
 

@@ -8,7 +8,7 @@ import {
 } from "../schemas";
 import { GetProfilesService } from "src/services/get-profiles";
 
-@Controller()
+@Controller('politicians')
 export class GetProfilesController {
   loggerContext: string = "get-profiles-controller";
   constructor(private readonly appService: GetProfilesService) {}
