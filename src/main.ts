@@ -1,5 +1,4 @@
 import { NestFactory } from '@nestjs/core';
-import { FileInterceptor } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 

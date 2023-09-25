@@ -1,5 +1,4 @@
-import { Inject, Injectable } from "@nestjs/common";
-import { ElasticsearchService } from "@nestjs/elasticsearch";
+import { Injectable } from "@nestjs/common";
 import {
   ESError,
   Politician,

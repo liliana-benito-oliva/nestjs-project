@@ -3,13 +3,13 @@ import { GetDatasetsRequest } from "../schemas/requests/get-datasets-request";
 import { buildErrorResponseFromServiceError, simpleApiLogger } from "../common";
 import { validateDatasetQueryParams } from "../common/validation";
 import {
-  GetDatasetsResponse,
   isServiceError,
   responseCodes,
   ResponseGeneric,
 } from "../schemas";
 import { GetDatasetsService } from "../services";
-import { ApiOperation, ApiResponse } from "@nestjs/swagger";
+import { ApiOperation, ApiResponse, getSchemaPath } from "@nestjs/swagger";
+import { PoliticianDto } from "src/schemas/responses/politician.dto";
 
 @Controller("data-operations")
 export class GetDatasetsController {
@@ -29,7 +29,59 @@ export class GetDatasetsController {
     summary:
       "Returns several functions, these can be passed as an array to execute as many or as few as desired",
   })
-  @ApiResponse({ status: 500, description: 'description of the error from es'})
+  @ApiResponse({
+    status: 200,
+    schema: {
+      properties: {
+        average: {
+          type: "number",
+        },
+        averageByGender: {
+          type: "object",
+          properties: {
+            men: {
+              type: "number",
+            },
+            women: {
+              type: "number",
+            },
+          },
+        },
+        median: {
+          type: "number",
+        },
+        medianByGender: {
+          type: "object",
+          properties: {
+            men: {
+              type: "number",
+            },
+            women: {
+              type: "number",
+            },
+          },
+        },
+        topSalaries: {
+          type: 'array',
+          items: {$ref: getSchemaPath(PoliticianDto)}
+        },
+        topSalariesByGender: {
+          type: 'object',
+          properties: {
+            men: {
+              type: 'array',
+              items: {$ref: getSchemaPath(PoliticianDto)}
+            },
+            women: {
+              type: 'array',
+              items: {$ref: getSchemaPath(PoliticianDto)}
+            }
+          }
+        }
+      },
+    },
+  })
+  @ApiResponse({ status: 500, description: "description of the error from es" })
   async getDatasets(
     @Query() params: GetDatasetsRequest
   ): Promise<ResponseGeneric> {

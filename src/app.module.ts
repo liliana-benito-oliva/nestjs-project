@@ -1,5 +1,4 @@
 import { Module } from "@nestjs/common";
-import { ElasticsearchModule } from "@nestjs/elasticsearch";
 import {
   GetDatasetsController,
   GetProfilesController,
