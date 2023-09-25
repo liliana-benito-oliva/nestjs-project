@@ -9,6 +9,7 @@ import {
   ResponseGeneric,
 } from "../schemas";
 import { GetDatasetsService } from "../services";
+import { ApiOperation, ApiResponse } from "@nestjs/swagger";
 
 @Controller("data-operations")
 export class GetDatasetsController {
@@ -24,6 +25,11 @@ export class GetDatasetsController {
   constructor(private readonly appService: GetDatasetsService) {}
 
   @Get()
+  @ApiOperation({
+    summary:
+      "Returns several functions, these can be passed as an array to execute as many or as few as desired",
+  })
+  @ApiResponse({ status: 500, description: 'description of the error from es'})
   async getDatasets(
     @Query() params: GetDatasetsRequest
   ): Promise<ResponseGeneric> {

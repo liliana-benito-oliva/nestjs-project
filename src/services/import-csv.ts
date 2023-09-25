@@ -9,6 +9,9 @@ export class ImportCsvService {
   constructor(private esClient: ESClient) {}
 
   async postCsv(csv: Express.Multer.File): Promise<string | ServiceError> {
+    //If index doesnt exist we create it
+    await this.esClient.init();
+    
     const buffer = fs.readFileSync(getPathFormated(csv.path));
     const csvData = customCsvParse(buffer.toString());
     const esResult = await this.esClient.indexBulk(csvData);

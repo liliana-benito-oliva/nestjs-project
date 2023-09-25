@@ -19,30 +19,52 @@ export class ESClient {
 
   constructor() {
     //private readonly client: ElasticsearchService //@Inject("ELASTICSEARCH_CLIENT") private readonly client: Client
-    this.client = new Client({ node: "http://localhost:9200" });
-    this.client.cat
-      .indices({
-        format: "json",
-      })
-      .then((indices) => {
-        if (!indices.body.find((i) => i.index === this.index)) {
-          this.client.indices.create({ index: this.index }).then(() => {
-            this.client.indices.putTemplate({
-              name: `${this.index}_template`,
-              body: politicianTemplate,
+    this.client = new Client({
+      node: process.env.ELASTICSEARCH_NODE || "http://localhost:9200",
+    });
+  }
+
+  async init() {
+    try {
+      this.client.cat
+        .indices({
+          format: "json",
+        })
+        .then((indices) => {
+          if (!indices.body.find((i) => i.index === this.index)) {
+            this.client.indices.create({ index: this.index }).then(() => {
+              this.client.indices.putTemplate({
+                name: `${this.index}_template`,
+                body: politicianTemplate,
+              });
             });
+          }
+        });
+
+      this.client.cat.templates({ format: "json" }).then((templates) => {
+        if (
+          !templates.body.find((t) => t.index_patterns.includes(this.index))
+        ) {
+          this.client.indices.putTemplate({
+            name: `${this.index}_template`,
+            body: politicianTemplate,
           });
         }
       });
-
-    this.client.cat.templates({ format: "json" }).then((templates) => {
-      if (!templates.body.find((t) => t.index_patterns.includes(this.index))) {
-        this.client.indices.putTemplate({
-          name: `${this.index}_template`,
-          body: politicianTemplate,
-        });
-      }
-    });
+    } catch (err) {
+      const error: ESError = {
+        method: "init",
+        cause: "ellasticSearch client error",
+        additionalData: err,
+      };
+      simpleApiLogger(
+        this.loggerContext,
+        "error",
+        `${error.cause} in method: ${error.method}`,
+        error.additionalData
+      );
+      return error;
+    }
   }
 
   async indexBulk(

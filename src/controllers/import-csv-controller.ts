@@ -16,6 +16,7 @@ import {
   ResponseGeneric,
 } from "../schemas";
 import { ImportCsvService } from "../services";
+import { ApiResponse } from "@nestjs/swagger";
 
 @Controller('files')
 export class ImportCsvController {
@@ -23,6 +24,8 @@ export class ImportCsvController {
   loggerContext: string = "import-csv-controller";
 
   @Post()
+  @ApiResponse({ status: 201, description: 'CREATED'})
+  @ApiResponse({ status: 500, description: 'description of the error from es'})
   @UseInterceptors(FileInterceptor("csv", multerOptions))
   async postCsv(@UploadedFile() csv: Express.Multer.File): Promise<ResponseGeneric> {
     simpleApiLogger(
