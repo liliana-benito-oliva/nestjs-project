@@ -16,3 +16,7 @@ const esErrorSchema = Z.object({
 }).and(serviceErrorSchema);
 
 export type ESError = Z.Infer<typeof esErrorSchema>;
+
+export const isESError = (
+  evaluated: ESError | any
+): evaluated is ESError => !!(evaluated as ESError).method;

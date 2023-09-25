@@ -8,24 +8,28 @@ import {
 } from "../schemas";
 import { GetProfilesService } from "../services/get-profiles";
 
-@Controller('politicians')
+@Controller("politicians")
 export class GetProfilesController {
   loggerContext: string = "get-profiles-controller";
   constructor(private readonly appService: GetProfilesService) {}
 
   @Get()
-  getDatasets(@Query() params: GetProfilesFilters): ResponseGeneric {
-    //validation params
-    if (false) {
-      return buildErrorResponseFromServiceError(400, {});
-    }
-    simpleApiLogger(
-      this.loggerContext,
-      "debug",
-      "controller called with:",
-      params
-    );
-    const serviceResponse = this.appService.getProfiles(params);
+  async getDatasets(
+    @Query("name") name: string,
+    @Query("party") party: string,
+    @Query("gender") gender: string,
+    @Query('charge') charge: string,
+    @Query('page') page: number,
+    @Query('pageSize') pageSize: number
+  ): Promise<ResponseGeneric> {
+    const params = { name, party, gender, charge, page, pageSize };
+    simpleApiLogger(this.loggerContext, "debug", "controller called with:", {
+      name,
+      party,
+      gender,
+      charge
+    });
+    const serviceResponse = await this.appService.getProfiles(params);
     if (isServiceError(serviceResponse)) {
       return buildErrorResponseFromServiceError(500, serviceResponse);
     }

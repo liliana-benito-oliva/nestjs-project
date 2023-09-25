@@ -5,6 +5,7 @@ import {
   UseInterceptors,
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
+import { multerOptions } from "../common/validation";
 import {
   simpleApiLogger,
   buildErrorResponseFromServiceError,
@@ -13,7 +14,6 @@ import {
   isServiceError,
   responseCodes,
   ResponseGeneric,
-  ServiceError,
 } from "../schemas";
 import { ImportCsvService } from "../services";
 
@@ -23,18 +23,14 @@ export class ImportCsvController {
   loggerContext: string = "import-csv-controller";
 
   @Post()
-  @UseInterceptors(FileInterceptor("csv"))
-  postCsv(@UploadedFile() csv: Express.Multer.File): ResponseGeneric {
-    //Validate file data
-    if (false) {
-      return buildErrorResponseFromServiceError(400, {});
-    }
+  @UseInterceptors(FileInterceptor("csv", multerOptions))
+  async postCsv(@UploadedFile() csv: Express.Multer.File): Promise<ResponseGeneric> {
     simpleApiLogger(
       this.loggerContext,
       "debug",
       "controller called with valid file"
     );
-    const serviceResponse = this.appService.postCsv();
+    const serviceResponse = await this.appService.postCsv(csv);
     if (isServiceError(serviceResponse)) {
       return buildErrorResponseFromServiceError(
         500,

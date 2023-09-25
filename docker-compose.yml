@@ -1,0 +1,45 @@
+version: '3'
+services: 
+  nestjs:
+    build: 
+      context: .
+      dockerfile: ./Dockerfile
+    environment: 
+      - APP_PORT=${APP_PORT}
+      - ELASTICSEARCH_NODE=${ELASTICSEARCH_NODE}
+      - ELASTICSEARCH_USERNAME=${ELASTICSEARCH_USERNAME}
+      - ELASTICSEARCH_PASSWORD=${ELASTICSEARCH_PASSWORD}
+    ports: 
+      - "3000:3000"
+    container_name: nest-app
+    depends_on: 
+      - esOne
+    volumes: 
+      - .:/app
+      - /app/node_modules
+    networks:
+      - elastic
+  esOne:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.13.0
+    container_name: esOne
+    environment:
+      - node.name=esOne
+      - cluster.name=es-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - discovery.type=single-node
+      - ELASTICSEARCH_PASSWORD=${ELASTICSEARCH_PASSWORD}
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./esData01:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+    networks:
+      - elastic
+volumes:
+  esData01:
+networks: 
+  elastic:

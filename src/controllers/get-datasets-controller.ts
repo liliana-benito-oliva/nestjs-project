@@ -1,9 +1,6 @@
 import { Controller, Get, Query } from "@nestjs/common";
 import { GetDatasetsRequest } from "../schemas/requests/get-datasets-request";
-import {
-  buildErrorResponseFromServiceError,
-  simpleApiLogger,
-} from "../common";
+import { buildErrorResponseFromServiceError, simpleApiLogger } from "../common";
 import { validateDatasetQueryParams } from "../common/validation";
 import {
   GetDatasetsResponse,
@@ -13,18 +10,23 @@ import {
 } from "../schemas";
 import { GetDatasetsService } from "../services";
 
-@Controller('data-operations')
+@Controller("data-operations")
 export class GetDatasetsController {
   loggerContext: string = "get-datasets-controller";
   methodDictionary = {
-    "get-average": this.appService.getAverage,
-    "get-median": this.appService.getMedianSalary,
-    "get-top-salaries": this.appService.getTopNSalaries,
+    "get-average": "getAverage",
+    "get-median": "getMedianSalary",
+    "get-top-salaries": "getTopNSalaries",
+    "get-average-by-gender": "getAverageByGender",
+    "get-median-by-gender": "getMedianSalaryByGender",
+    "get-top-salaries-by-gender": "getTopNSalariesByGender",
   };
   constructor(private readonly appService: GetDatasetsService) {}
 
   @Get()
-  getDatasets(@Query() params: GetDatasetsRequest): ResponseGeneric {
+  async getDatasets(
+    @Query() params: GetDatasetsRequest
+  ): Promise<ResponseGeneric> {
     if (!validateDatasetQueryParams(params)) {
       return buildErrorResponseFromServiceError(400, {});
     }
@@ -37,19 +39,14 @@ export class GetDatasetsController {
     const methodsToExecute = params.methods.map(
       (methodName) => this.methodDictionary[methodName]
     );
-    const responseData: GetDatasetsResponse = methodsToExecute.reduce(
-      (acc, method) => {
-        const serviceResponse = method();
-        if (isServiceError(serviceResponse)) {
-          return buildErrorResponseFromServiceError(
-            500,
-            serviceResponse
-          );
-        }
-        return { ...acc, ...serviceResponse };
-      },
-      {}
-    );
+    const responseData = await methodsToExecute.reduce(async (acc, method) => {
+      const prev = await acc;
+      const serviceResponse = await this.appService[method]();
+      if (isServiceError(serviceResponse)) {
+        return buildErrorResponseFromServiceError(500, serviceResponse);
+      }
+      return { ...prev, ...serviceResponse };
+    }, Promise.resolve([]));
     return { code: 200, description: responseCodes[200], body: responseData };
   }
 }
